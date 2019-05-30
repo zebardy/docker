@@ -76,6 +76,7 @@ get-manifest() {
 get-digest() {
     local manifest
     manifest=$(get-manifest "$1")
+    echo "manifest: $manifest"
     #get-manifest "$1" | jq .config.digest
     if [ "$debug" = true ]; then
         >&2 echo "DEBUG: Manifest for $1: $manifest"
@@ -97,6 +98,7 @@ publish() {
     if [ "$dry_run" = true ]; then
         build_opts=()
     fi
+#    get-digest "8u212-stretch"
 
     sha=$(curl -q -fsSL "https://repo.jenkins-ci.org/releases/org/jenkins-ci/main/jenkins-war/${version}/jenkins-war-${version}.war.sha256" )
 

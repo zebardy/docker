@@ -1,6 +1,6 @@
 FROM openjdk:8-jdk-stretch
 
-RUN apt-get update && apt-get install -y sudo vim git curl && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y sudo vim git curl build-essential && rm -rf /var/lib/apt/lists/*
 RUN curl -sSL get.docker.com | sh
 #RUN docker version
 
