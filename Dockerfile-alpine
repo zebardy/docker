@@ -1,6 +1,6 @@
 FROM openjdk:8-jdk-alpine
 
-RUN apk add --no-cache git openssh-client curl unzip bash ttf-dejavu coreutils tini docker build-base
+RUN apk add --no-cache git openssh-client curl unzip bash ttf-dejavu coreutils tini docker build-base shadow
 
 ARG user=jenkins
 ARG group=jenkins
@@ -59,7 +59,7 @@ EXPOSE ${agent_port}
 ENV COPY_REFERENCE_FILE_LOG $JENKINS_HOME/copy_reference_file.log
 
 # give user permission to access the docker server
-RUN sudo usermod ${user} -aG docker
+RUN usermod ${user} -aG docker
 
 USER ${user}
 
