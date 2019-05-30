@@ -25,7 +25,7 @@ if [[ "$DOCKERHUB_ORGANISATION" == "jenkins" ]]; then
     exit 1;
 fi
 
-ARCHS=(arm arm64 s390x ppc64le amd64)
+ARCHS=(arm64)
 QEMUARCHS=(arm aarch64 s390x ppc64le x86_64)
 QEMUVER="v3.0.0"
 BASEIMAGE=

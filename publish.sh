@@ -84,7 +84,7 @@ get-digest() {
 }
 
 get-latest-versions() {
-    curl -q -fsSL https://repo.jenkins-ci.org/releases/org/jenkins-ci/main/jenkins-war/maven-metadata.xml | grep '<version>.*</version>' | grep -E -o '[0-9]+(\.[0-9]+)+' | sort-versions | uniq | tail -n 20
+    curl -q -fsSL https://repo.jenkins-ci.org/releases/org/jenkins-ci/main/jenkins-war/maven-metadata.xml | grep '<version>.*</version>' | grep -E -o '[0-9]+(\.[0-9]+)+' | sort-versions | uniq | tail -n 1
 }
 
 publish() {
@@ -100,6 +100,12 @@ publish() {
 
     sha=$(curl -q -fsSL "https://repo.jenkins-ci.org/releases/org/jenkins-ci/main/jenkins-war/${version}/jenkins-war-${version}.war.sha256" )
 
+    echo "docker build --file \"Dockerfile$variant\" \
+                 --build-arg \"JENKINS_VERSION=$version\" \
+                 --build-arg \"JENKINS_SHA=$sha\" \
+                 --tag \"${JENKINS_REPO}:${tag}\" \
+                 \"${build_opts[@]+\"${build_opts[@]}\"}\" ."
+
     docker build --file "Dockerfile$variant" \
                  --build-arg "JENKINS_VERSION=$version" \
                  --build-arg "JENKINS_SHA=$sha" \
@@ -107,11 +113,11 @@ publish() {
                  "${build_opts[@]+"${build_opts[@]}"}" .
 
     # " line to fix syntax highlightning
-    if [ ! "$dry_run" = true ]; then
-        docker push "${JENKINS_REPO}:${tag}"
-    else
-        echo "Dry run mode: no docker push"
-    fi
+#    if [ ! "$dry_run" = true ]; then
+#        docker push "${JENKINS_REPO}:${tag}"
+#    else
+#        echo "Dry run mode: no docker push"
+#    fi
 }
 
 tag-and-push() {
@@ -208,14 +214,14 @@ if [ "$dry_run" = true ]; then
     echo "Dry run, will not publish images"
 fi
 
-TOKEN=$(login-token)
+#TOKEN=$(login-token)
 
 lts_version=""
 version=""
 for version in $(get-latest-versions); do
-    if is-published "$version$variant"; then
+#    if is-published "$version$variant"; then
         echo "Tag is already published: $version$variant"
-    else
+#    else
         echo "$version$variant not published yet"
         if versionLT "$start_after" "$version"; then # if start_after < version
             echo "Version $version higher than $start_after: publishing $version$variant"
@@ -223,18 +229,18 @@ for version in $(get-latest-versions); do
         else
             echo "Version $version lower or equal to $start_after, no publishing (variant=$variant)."
         fi
-    fi
+#    fi
 
     # Update lts tag (if we have an LTS version depending on $start_after)
-    if versionLT "$start_after" "$version" && [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-        lts_version="${version}"
-    fi
+#    if versionLT "$start_after" "$version" && [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+#        lts_version="${version}"
+#    fi
 done
 
-publish-latest "${version}" "${variant}"
+#publish-latest "${version}" "${variant}"
 
-if [ -n "${lts_version}" ]; then
-    publish-lts "${lts_version}" "${variant}"
-else
-    echo "No LTS publishing"
-fi
+#if [ -n "${lts_version}" ]; then
+#    publish-lts "${lts_version}" "${variant}"
+#else
+#    echo "No LTS publishing"
+#fi

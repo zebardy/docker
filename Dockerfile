@@ -1,6 +1,8 @@
 FROM openjdk:8-jdk-stretch
 
-RUN apt-get update && apt-get install -y git curl && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y sudo vim git curl && rm -rf /var/lib/apt/lists/*
+RUN curl -sSL get.docker.com | sh
+#RUN docker version
 
 ARG user=jenkins
 ARG group=jenkins
@@ -67,8 +69,10 @@ EXPOSE ${http_port}
 EXPOSE ${agent_port}
 
 ENV COPY_REFERENCE_FILE_LOG $JENKINS_HOME/copy_reference_file.log
+RUN sudo usermod jenkins -aG docker
 
 USER ${user}
+#USER root
 
 COPY jenkins-support /usr/local/bin/jenkins-support
 COPY jenkins.sh /usr/local/bin/jenkins.sh
